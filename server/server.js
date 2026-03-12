@@ -157,18 +157,20 @@ const io = new Server(server, {
   },
 });
 
-connectRedis().then(() => {
-  io.adapter(createAdapter(pubClient, subClient));
-  roomSocket(io);
+connectRedis()
+  .then(() => {
+    io.adapter(createAdapter(pubClient, subClient));
+    roomSocket(io);
 
-  /* -------- Start Server -------- */
+    /* -------- Start Server -------- */
 
-  const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 5000;
 
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to Redis:");
+    console.error(err);
   });
-}).catch(err => {
-  console.error("Failed to connect to Redis:");
-  console.error(err);
-});

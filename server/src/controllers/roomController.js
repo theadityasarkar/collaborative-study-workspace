@@ -3,7 +3,7 @@ const generateRoomCode = require("../utils/generateRoomCode");
 
 exports.createRoom = async (req, res) => {
   try {
-    const { host } = req.body;
+    const host = req.body?.host;
 
     if (!host) {
       return res.status(400).json({ message: "host required" });

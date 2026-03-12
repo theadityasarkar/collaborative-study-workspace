@@ -12,14 +12,18 @@ const CreateRoom = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
     if (!username.trim()) return;
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
-      const data = await createRoom();
-      const roomCode = data.room?.roomCode;
+      // FIX: Pass the username to the backend correctly
+      const data = await createRoom(username);
+      
+      // The backend returns the room object directly
+      const roomCode = data?.roomCode;
       
       if (roomCode) {
         // Pass username via router state
@@ -28,7 +32,7 @@ const CreateRoom = () => {
         setError('Failed to retrieve room code.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error creating workspace.');
+      setError(err?.response?.data?.message || 'Error creating workspace.');
     } finally {
       setLoading(false);
     }
@@ -36,32 +40,79 @@ const CreateRoom = () => {
 
   return (
     <Layout>
-      <div className="glass-panel animate-fade-in" style={{ 
-        maxWidth: '480px', 
-        width: '100%', 
-        margin: '60px auto', 
-        padding: '40px' 
-      }}>
-        <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', textAlign: 'center' }}>Create Workspace</h2>
-        <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '32px' }}>
+      <div
+        className="glass-panel animate-fade-in"
+        style={{
+          maxWidth: '480px',
+          width: '100%',
+          margin: '60px auto',
+          padding: '40px'
+        }}
+      >
+        <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', textAlign: 'center' }}>
+          Create Workspace
+        </h2>
+
+        <p
+          style={{
+            color: 'var(--text-secondary)',
+            textAlign: 'center',
+            marginBottom: '32px'
+          }}
+        >
           Set up a new collaborative room instance.
         </p>
 
         {error && (
-          <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--error)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem' }}>
+          <div
+            style={{
+              padding: '12px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: 'var(--error)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              fontSize: '0.9rem'
+            }}
+          >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form
+          onSubmit={handleCreate}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}
+        >
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                color: 'var(--text-secondary)'
+              }}
+            >
               Your Display Name
             </label>
+
             <div style={{ position: 'relative' }}>
-              <User size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input 
-                type="text" 
+              <User
+                size={18}
+                style={{
+                  position: 'absolute',
+                  left: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)'
+                }}
+              />
+
+              <input
+                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. Alex, Maria..."
@@ -72,17 +123,26 @@ const CreateRoom = () => {
               />
             </div>
           </div>
-          
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
+
+          <button
+            type="submit"
+            className="btn btn-primary"
             disabled={!username.trim() || loading}
             style={{ marginTop: '10px', height: '48px' }}
           >
-            {loading ? <Loader2 size={20} className="spinning" style={{ animation: 'spin 1s linear infinite' }} /> : 'Initialize Room'}
+            {loading ? (
+              <Loader2
+                size={20}
+                className="spinning"
+                style={{ animation: 'spin 1s linear infinite' }}
+              />
+            ) : (
+              'Initialize Room'
+            )}
           </button>
         </form>
       </div>
+
       <style>{`
         @keyframes spin {
           100% { transform: rotate(360deg); }
